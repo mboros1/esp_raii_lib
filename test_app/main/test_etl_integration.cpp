@@ -1,14 +1,15 @@
+#include "unity.h"
+#include <memory>
+
+#include "esp_raii_lib/gpio.hpp"
+#include "esp_raii_lib/timer.hpp"
 #include "etl/array.h"
 #include "etl/map.h"
 #include "etl/optional.h"
 #include "etl/string.h"
 #include "etl/vector.h"
-#include "unity.h"
-
-#include <memory>
-
-#include "esp_raii_lib/gpio.hpp"
-#include "esp_raii_lib/timer.hpp"
+#include "etl/circular_buffer.h"
+#include "etl/bitset.h"
 
 static void test_etl_vector_basic() {
   etl::vector<int, 10> vec;
@@ -76,7 +77,7 @@ static void test_etl_optional_with_raii() {
 
   TEST_ASSERT_FALSE(maybe_gpio.has_value());
 
-  maybe_gpio = esp_raii::GPIO(GPIO_NUM_33);
+  maybe_gpio = esp_raii::GPIO(GPIO_NUM_18);
   TEST_ASSERT_TRUE(maybe_gpio.has_value());
 
   if (maybe_gpio) {
@@ -95,8 +96,6 @@ struct SensorReading {
 };
 
 static void test_etl_circular_buffer() {
-#include "etl/circular_buffer.h"
-
   // Circular buffer for sensor readings
   etl::circular_buffer<SensorReading, 5> readings;
 
@@ -105,7 +104,9 @@ static void test_etl_circular_buffer() {
   // Add readings
   for (int i = 0; i < 7; i++) {
     SensorReading reading = {
-        .temperature = 20.0f + i, .humidity = 50.0f + i, .timestamp = 1000 + i};
+        .temperature = 20.0f + i, 
+        .humidity = 50.0f + i, 
+        .timestamp = static_cast<uint32_t>(1000 + i)};
     readings.push(reading);
   }
 
@@ -150,8 +151,6 @@ static void test_etl_delegate_vector() {
 }
 
 static void test_etl_bitset() {
-#include "etl/bitset.h"
-
   // Use bitset for GPIO pin tracking
   etl::bitset<40> gpio_in_use;
 

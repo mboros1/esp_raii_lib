@@ -1,10 +1,10 @@
 #include "esp_log.h"
-#include "etl/string.h"
-#include "etl/vector.h"
-
-#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include "esp_raii_lib/esp_raii_lib.hpp"
+#include "etl/string.h"
+#include "etl/vector.h"
 
 static const char* TAG = "RAII_EXAMPLE";
 
@@ -46,7 +46,7 @@ extern "C" void app_main(void) {
     esp_raii::Timer timer;
     int counter = 0;
 
-    auto timer_callback = [&counter, TAG]() {
+    auto timer_callback = [&counter]() {
       ESP_LOGI(TAG, "Timer fired! Count: %d", ++counter);
     };
 

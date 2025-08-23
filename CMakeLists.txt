@@ -23,13 +23,12 @@ if(NOT srcs)
 endif()
 
 # Register the component
-# Note: esp_driver_gpio is for IDF 5.x+, driver is for older versions
-# Both are listed for compatibility
+# driver component contains GPIO and other peripheral drivers in all IDF versions
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "include" "deps"
     PRIV_INCLUDE_DIRS ${priv_include_dirs}
-    REQUIRES driver esp_driver_gpio esp_timer
+    REQUIRES driver esp_timer
 )
 
 # Add compile definitions for ETL - Zero cost configuration
@@ -42,6 +41,8 @@ target_compile_definitions(${COMPONENT_LIB} PUBLIC
     ETL_IN_UNIT_TEST=0        # Not in unit test mode
     ETL_USE_TYPE_TRAITS_BUILTINS=1  # Use compiler builtins for type traits
     ETL_NO_LARGE_CHAR_SUPPORT=1     # No need for large char support
+    ETL_HAS_NATIVE_CHAR16_T=1       # C++11 has native char16_t
+    ETL_HAS_NATIVE_CHAR32_T=1       # C++11 has native char32_t
 )
 
 # Set C++ standard

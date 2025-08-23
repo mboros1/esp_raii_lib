@@ -66,8 +66,13 @@ jobs:
         chmod +x run_qemu.sh
         
         # Merge binaries for QEMU
-        idf.py merge_bin -o build/flash_image.bin \
-          @build/flash_args
+        # Use esptool.py directly for better compatibility across IDF versions
+        esptool.py --chip ${{ matrix.target }} merge_bin \
+          --flash_mode dio --flash_freq 40m --flash_size 2MB \
+          -o build/flash_image.bin \
+          0x1000 build/bootloader/bootloader.bin \
+          0x10000 build/esp_raii_lib_test.bin \
+          0x8000 build/partition_table/partition-table.bin
         
         # Run QEMU and check output
         ./run_qemu.sh || true
@@ -106,8 +111,13 @@ jobs:
         chmod +x run_qemu_riscv.sh
         
         # Merge binaries for QEMU
-        idf.py merge_bin -o build/flash_image.bin \
-          @build/flash_args
+        # Use esptool.py directly for better compatibility across IDF versions
+        esptool.py --chip ${{ matrix.target }} merge_bin \
+          --flash_mode dio --flash_freq 40m --flash_size 2MB \
+          -o build/flash_image.bin \
+          0x1000 build/bootloader/bootloader.bin \
+          0x10000 build/esp_raii_lib_test.bin \
+          0x8000 build/partition_table/partition-table.bin
         
         # Run QEMU and check output
         ./run_qemu_riscv.sh || true

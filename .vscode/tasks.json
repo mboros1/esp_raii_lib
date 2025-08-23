@@ -1,0 +1,105 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build - Build project",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py build",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py build"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                {
+                    "owner": "cpp",
+                    "fileLocation": "autoDetect",
+                    "pattern": {
+                        "regexp": "^(.*?):(\\d+):(\\d*):?\\s+(error|warning|note):\\s*(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "severity": 4,
+                        "message": 5
+                    }
+                }
+            ]
+        },
+        {
+            "label": "Set ESP-IDF Target",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py set-target ${config:idf.adapterTargetName}",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py set-target ${config:idf.adapterTargetName}"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean - Clean the project",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py fullclean",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py fullclean"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Flash - Flash the device",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py -p ${config:idf.port} flash",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py -p ${config:idf.port} flash"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Monitor - Start monitor",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py -p ${config:idf.port} monitor",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py -p ${config:idf.port} monitor"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "OpenOCD - Start OpenOCD",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-s",
+                "${config:idf.customExtraVars.OPENOCD_SCRIPTS}",
+                "-f",
+                "interface/ftdi/esp32_devkitj_v1.cfg",
+                "-f",
+                "target/esp32.cfg"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Menuconfig",
+            "type": "shell",
+            "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}/tools/idf.py menuconfig",
+            "windows": {
+                "command": "${config:idf.pythonBinPath} ${config:idf.espIdfPath}\\tools\\idf.py menuconfig"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "ESP-IDF",
+            "compilerPath": "${env:IDF_PATH}/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "includePath": [
+                "${workspaceFolder}/main",
+                "${workspaceFolder}/components/etl/include",
+                "${env:IDF_PATH}/components/**",
+                "${workspaceFolder}/build/config",
+                "${workspaceFolder}/build/esp-idf/**"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "${env:IDF_PATH}/components",
+                    "${workspaceFolder}/components/etl/include"
+                ],
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "defines": [
+                "ESP_PLATFORM",
+                "ETL_NO_STL=1",
+                "ETL_NO_CHECKS=1",
+                "CONFIG_IDF_TARGET_ESP32=1",
+                "_GNU_SOURCE"
+            ],
+            "compilerArgs": [
+                "-mlongcalls"
+            ]
+        }
+    ],
+    "version": 4
+}

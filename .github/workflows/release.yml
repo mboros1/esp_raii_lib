@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Create Release Package
+      run: |
+        # Create a clean package without git files
+        mkdir -p release/esp_raii_lib
+        cp -r CMakeLists.txt include src components release/esp_raii_lib/
+        cp -r examples README.md LICENSE release/esp_raii_lib/ 2>/dev/null || true
+        cp idf_component.yml release/esp_raii_lib/
+        
+        # Create archive
+        cd release
+        tar czf esp_raii_lib.tar.gz esp_raii_lib
+        zip -r esp_raii_lib.zip esp_raii_lib
+        cd ..
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          release/esp_raii_lib.tar.gz
+          release/esp_raii_lib.zip
+        body: |
+          ESP RAII Library Release
+          
+          ## Installation
+          
+          Download and extract to your ESP-IDF project's `components` directory:
+          
+          ```bash
+          cd your-project/components
+          tar xzf esp_raii_lib.tar.gz
+          ```
+          
+          Or add as git submodule:
+          ```bash
+          git submodule add https://github.com/${{ github.repository }}.git components/esp_raii_lib
+          ```
+          
+          ## Changes
+          See [commit history](https://github.com/${{ github.repository }}/commits/${{ github.ref_name }})
+        draft: false
+        prerelease: false
+
+    - name: Publish to ESP Component Registry
+      if: false  # Enable when ready to publish
+      run: |
+        pip install idf-component-manager
+        # Would need API key as secret
+        # idf-component-manager upload-component --name esp_raii_lib --version ${{ github.ref_name }}

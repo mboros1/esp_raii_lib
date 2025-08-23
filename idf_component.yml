@@ -1,0 +1,22 @@
+version: "0.1.0"
+description: "C++ RAII wrappers for ESP-IDF with ETL containers"
+url: "https://github.com/yourusername/esp_raii_lib"
+documentation: "https://github.com/yourusername/esp_raii_lib/blob/main/README.md"
+issues: "https://github.com/yourusername/esp_raii_lib/issues"
+
+dependencies:
+  idf: ">=5.0"
+  
+targets:
+  - esp32
+  - esp32s2
+  - esp32s3
+  - esp32c3
+  - esp32c6
+  - esp32h2
+
+tags:
+  - "c++"
+  - "raii"
+  - "etl"
+  - "wrapper"

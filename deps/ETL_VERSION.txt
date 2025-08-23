@@ -1,0 +1,7 @@
+ETL Version: 20.43.0
+Source: https://github.com/ETLCPP/etl
+Date vendored: 2025-08-23
+License: MIT
+
+This directory contains the header-only Embedded Template Library (ETL).
+To update: Clone ETL and copy the include/etl directory here.

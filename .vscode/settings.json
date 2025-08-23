@@ -1,0 +1,41 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.adapterTargetName": "esp32",
+    "idf.customExtraPaths": "${env:IDF_PATH}/tools/tools/xtensa-esp-elf-gdb/14.2_20240403/xtensa-esp-elf-gdb/bin:${env:IDF_PATH}/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin:${env:IDF_PATH}/tools/tools/cmake/3.24.0/cmake.app/Contents/bin:${env:IDF_PATH}/tools/tools/openocd-esp32/v0.12.0-esp32-20240821/openocd-esp32/bin:${env:IDF_PATH}/tools/tools/ninja/1.11.1",
+    "idf.customExtraVars": {
+        "OPENOCD_SCRIPTS": "${env:IDF_PATH}/tools/tools/openocd-esp32/v0.12.0-esp32-20240821/openocd-esp32/share/openocd/scripts"
+    },
+    "idf.espIdfPath": "${env:IDF_PATH}",
+    "idf.openOcdConfigs": [
+        "interface/ftdi/esp32_devkitj_v1.cfg",
+        "target/esp32.cfg"
+    ],
+    "idf.pythonBinPath": "${env:IDF_PATH}/tools/python_env/idf5.4_py3.12_env/bin/python",
+    "idf.toolsPath": "${env:IDF_PATH}/tools",
+    "idf.flashType": "UART",
+    "idf.port": "/dev/tty.usbserial-0001",
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c",
+        "*.cpp": "cpp",
+        "*.hpp": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "vector": "cpp"
+    },
+    "C_Cpp.default.compilerPath": "${env:IDF_PATH}/tools/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/main",
+        "${workspaceFolder}/components/etl/include",
+        "${env:IDF_PATH}/components/**",
+        "${workspaceFolder}/build/config"
+    ],
+    "C_Cpp.default.browse.path": [
+        "${workspaceFolder}",
+        "${env:IDF_PATH}/components"
+    ],
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.errorSquiggles": "enabled"
+}

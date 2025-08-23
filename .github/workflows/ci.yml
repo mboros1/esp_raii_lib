@@ -1,0 +1,197 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        idf_version: ["v5.1", "v5.2", "latest"]
+        target: ["esp32", "esp32c3"]
+    
+    container:
+      image: espressif/idf:${{ matrix.idf_version }}
+      options: --user root
+
+    steps:
+    - name: Checkout repository with submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Set safe directory
+      run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git config --global --add safe.directory $GITHUB_WORKSPACE/components/etl
+
+    - name: Install QEMU
+      run: |
+        apt-get update
+        apt-get install -y qemu-system-xtensa qemu-system-misc
+
+    - name: Build test application
+      working-directory: test_app
+      run: |
+        . $IDF_PATH/export.sh
+        idf.py set-target ${{ matrix.target }}
+        idf.py build
+
+    - name: Run tests in QEMU
+      if: matrix.target == 'esp32'
+      working-directory: test_app
+      timeout-minutes: 5
+      run: |
+        . $IDF_PATH/export.sh
+        
+        # Create a script to run QEMU and capture output
+        cat > run_qemu.sh << 'EOF'
+        #!/bin/bash
+        timeout 60 qemu-system-xtensa \
+          -nographic \
+          -machine esp32 \
+          -drive file=build/flash_image.bin,if=mtd,format=raw \
+          2>&1 | tee qemu_output.log
+        EOF
+        
+        chmod +x run_qemu.sh
+        
+        # Merge binaries for QEMU
+        idf.py merge_bin -o build/flash_image.bin \
+          @build/flash_args
+        
+        # Run QEMU and check output
+        ./run_qemu.sh || true
+        
+        # Check if tests completed
+        if grep -q "TESTS_COMPLETED: PASS" qemu_output.log; then
+          echo "✅ All tests passed!"
+          exit 0
+        elif grep -q "TESTS_COMPLETED: FAIL" qemu_output.log; then
+          echo "❌ Some tests failed!"
+          cat qemu_output.log
+          exit 1
+        else
+          echo "⚠️ Tests did not complete properly"
+          cat qemu_output.log
+          exit 1
+        fi
+
+    - name: Run tests in QEMU (RISC-V)
+      if: matrix.target == 'esp32c3'
+      working-directory: test_app
+      timeout-minutes: 5
+      run: |
+        . $IDF_PATH/export.sh
+        
+        # Create a script to run QEMU for RISC-V
+        cat > run_qemu_riscv.sh << 'EOF'
+        #!/bin/bash
+        timeout 60 qemu-system-riscv32 \
+          -nographic \
+          -machine esp32c3 \
+          -drive file=build/flash_image.bin,if=mtd,format=raw \
+          2>&1 | tee qemu_output.log
+        EOF
+        
+        chmod +x run_qemu_riscv.sh
+        
+        # Merge binaries for QEMU
+        idf.py merge_bin -o build/flash_image.bin \
+          @build/flash_args
+        
+        # Run QEMU and check output
+        ./run_qemu_riscv.sh || true
+        
+        # Check if tests completed
+        if grep -q "TESTS_COMPLETED: PASS" qemu_output.log; then
+          echo "✅ All tests passed!"
+          exit 0
+        elif grep -q "TESTS_COMPLETED: FAIL" qemu_output.log; then
+          echo "❌ Some tests failed!"
+          cat qemu_output.log
+          exit 1
+        else
+          echo "⚠️ Tests did not complete properly"
+          cat qemu_output.log
+          exit 1
+        fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.idf_version }}-${{ matrix.target }}
+        path: |
+          test_app/build/*.bin
+          test_app/build/*.elf
+          test_app/build/*.map
+          test_app/qemu_output.log
+
+  build-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        idf_version: ["latest"]
+        example: ["basic"]
+    
+    container:
+      image: espressif/idf:${{ matrix.idf_version }}
+      options: --user root
+
+    steps:
+    - name: Checkout repository with submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Set safe directory
+      run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git config --global --add safe.directory $GITHUB_WORKSPACE/components/etl
+
+    - name: Build example
+      working-directory: examples/${{ matrix.example }}
+      run: |
+        . $IDF_PATH/export.sh
+        idf.py set-target esp32
+        idf.py build
+
+    - name: Check build size
+      working-directory: examples/${{ matrix.example }}
+      run: |
+        . $IDF_PATH/export.sh
+        idf.py size
+        idf.py size-components
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cpplint
+
+    - name: Run cpplint
+      run: |
+        cpplint --recursive --exclude=components/etl --exclude=test_app/build \
+          --filter=-whitespace/line_length,-build/header_guard,-runtime/references \
+          include/

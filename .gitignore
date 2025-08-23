@@ -1,0 +1,48 @@
+# Build output
+build/
+sdkconfig
+sdkconfig.old
+*.bin
+*.elf
+*.map
+
+# Test outputs
+test_app/build/
+test_app/sdkconfig
+test_app/sdkconfig.old
+test_app/qemu_output.log
+examples/*/build/
+examples/*/sdkconfig
+examples/*/sdkconfig.old
+
+# VS Code ESP-IDF extension
+.vscode/.espressif
+
+# Python
+*.pyc
+__pycache__/
+.pytest_cache/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor backup files
+*.swp
+*~
+*.bak
+*.old
+
+# Dependencies are vendored, not generated
+# deps/ directory is tracked in git
+
+# CI/CD artifacts
+release/
+*.tar.gz
+*.zip
+
+# IDE files
+.idea/
+*.iml
+cmake-build-*/

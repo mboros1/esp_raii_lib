@@ -3,11 +3,15 @@
 
 # Define source files for the component
 set(srcs "")
+set(priv_include_dirs "")
 
 # If there are source files in src directory, add them here
-file(GLOB_RECURSE srcs_glob "src/*.cpp" "src/*.c")
-if(srcs_glob)
-    list(APPEND srcs ${srcs_glob})
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    file(GLOB_RECURSE srcs_glob "src/*.cpp" "src/*.c")
+    if(srcs_glob)
+        list(APPEND srcs ${srcs_glob})
+        list(APPEND priv_include_dirs "src")
+    endif()
 endif()
 
 # For a header-only library, we need at least one source file for ESP-IDF
@@ -22,7 +26,7 @@ endif()
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "include" "deps"
-    PRIV_INCLUDE_DIRS "src"
+    PRIV_INCLUDE_DIRS ${priv_include_dirs}
 )
 
 # Add compile definitions for ETL - Zero cost configuration

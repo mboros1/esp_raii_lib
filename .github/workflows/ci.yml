@@ -20,16 +20,14 @@ jobs:
       options: --user root
 
     steps:
-    - name: Checkout repository with submodules
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: recursive
         fetch-depth: 0
 
     - name: Set safe directory
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
-        git config --global --add safe.directory $GITHUB_WORKSPACE/components/etl
 
     - name: Install QEMU
       run: |
@@ -125,7 +123,7 @@ jobs:
 
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ matrix.idf_version }}-${{ matrix.target }}
         path: |
@@ -146,16 +144,14 @@ jobs:
       options: --user root
 
     steps:
-    - name: Checkout repository with submodules
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: recursive
         fetch-depth: 0
 
     - name: Set safe directory
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
-        git config --global --add safe.directory $GITHUB_WORKSPACE/components/etl
 
     - name: Build example
       working-directory: examples/${{ matrix.example }}
@@ -192,6 +188,6 @@ jobs:
 
     - name: Run cpplint
       run: |
-        cpplint --recursive --exclude=components/etl --exclude=test_app/build \
+        cpplint --recursive --exclude=deps \
           --filter=-whitespace/line_length,-build/header_guard,-runtime/references \
           include/

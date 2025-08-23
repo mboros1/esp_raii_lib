@@ -1,8 +1,8 @@
 ---
-# Google C++ Style with modifications for ESP-IDF
+# Google C++ Style to match cpplint requirements exactly
 BasedOnStyle: Google
-IndentWidth: 4
-ColumnLimit: 100
+IndentWidth: 2
+ColumnLimit: 80
 AlignAfterOpenBracket: Align
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
@@ -12,24 +12,60 @@ IndentCaseLabels: false
 PointerAlignment: Left
 SpaceAfterCStyleCast: true
 Standard: c++17
+
+# Access modifiers (public, private, protected) indented 1 space
+AccessModifierOffset: -1
+
+# Always insert newline at end of file
+InsertNewlineAtEOF: true
+
+# Include ordering to match cpplint expectations
+# Order: Related header, C system, C++ system, other headers
 IncludeBlocks: Regroup
 IncludeCategories:
-  # ESP-IDF headers
-  - Regex:           '^"(driver|esp_|freertos|soc|hal)/'
-    Priority:        2
-  # Project headers  
-  - Regex:           '^"esp_raii_lib/'
-    Priority:        3
-  # ETL headers
-  - Regex:           '^"etl/'
-    Priority:        4
+  # Main header for source file (e.g., foo.h for foo.cpp)
+  - Regex:           '^".*\.h"$'
+    Priority:        1
   # C system headers
   - Regex:           '^<.*\.h>'
-    Priority:        5
+    Priority:        2
   # C++ standard headers
   - Regex:           '^<.*>'
+    Priority:        3
+  # ESP-IDF headers
+  - Regex:           '^"(driver|esp_|freertos|soc|hal)/'
+    Priority:        4
+  # ETL headers (other library)
+  - Regex:           '^"etl/'
+    Priority:        5
+  # Project headers  
+  - Regex:           '^"esp_raii_lib/'
     Priority:        6
   # Other headers
   - Regex:           '.*'
     Priority:        7
 SortIncludes: true
+
+# Spacing
+SpacesBeforeTrailingComments: 2
+
+# Namespaces
+NamespaceIndentation: None
+
+# Keep one line functions together
+AllowShortBlocksOnASingleLine: Never
+
+# Constructor initializers
+ConstructorInitializerIndentWidth: 4
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Binary operators
+BreakBeforeBinaryOperators: None
+
+# Penalty settings to avoid unnecessary line breaks
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60

@@ -11,6 +11,7 @@ test_app/build/
 test_app/sdkconfig
 test_app/sdkconfig.old
 test_app/qemu_output.log
+test_app/dependencies.lock
 examples/*/build/
 examples/*/sdkconfig
 examples/*/sdkconfig.old

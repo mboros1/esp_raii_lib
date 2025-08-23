@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "esp_raii_lib/gpio.hpp"
+#include "etl/vector.h"
 
 // Test fixture
 static void test_gpio_constructor_destructor() {
@@ -54,9 +55,9 @@ static void test_gpio_move_semantics() {
 
 static void test_gpio_multiple_pins() {
   // Test managing multiple GPIO pins simultaneously
-  esp_raii::GPIO led1(GPIO_NUM_22);
-  esp_raii::GPIO led2(GPIO_NUM_23);
-  esp_raii::GPIO button(GPIO_NUM_25);
+  esp_raii::GPIO led1(GPIO_NUM_12);
+  esp_raii::GPIO led2(GPIO_NUM_13);
+  esp_raii::GPIO button(GPIO_NUM_14);
 
   TEST_ASSERT_EQUAL(ESP_OK, led1.configure_output());
   TEST_ASSERT_EQUAL(ESP_OK, led2.configure_output());
@@ -71,16 +72,15 @@ static void test_gpio_multiple_pins() {
 
 static void test_gpio_raii_in_vector() {
 // Test RAII behavior with ETL container
-#include "etl/vector.h"
 
   {
     etl::vector<esp_raii::GPIO, 3> gpio_pins;
 
     // Note: Can't use emplace_back directly due to move-only type
     // Must use move construction
-    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_26));
-    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_27));
-    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_32));
+    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_15));
+    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_16));
+    gpio_pins.push_back(esp_raii::GPIO(GPIO_NUM_17));
 
     for (auto& gpio : gpio_pins) {
       TEST_ASSERT_EQUAL(ESP_OK, gpio.configure_output());

@@ -23,10 +23,13 @@ if(NOT srcs)
 endif()
 
 # Register the component
+# Note: esp_driver_gpio is for IDF 5.x+, driver is for older versions
+# Both are listed for compatibility
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "include" "deps"
     PRIV_INCLUDE_DIRS ${priv_include_dirs}
+    REQUIRES driver esp_driver_gpio esp_timer
 )
 
 # Add compile definitions for ETL - Zero cost configuration

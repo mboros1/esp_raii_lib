@@ -40,9 +40,7 @@ target_compile_definitions(${COMPONENT_LIB} PUBLIC
     ETL_LOG_ERRORS=0          # No error logging overhead
     ETL_IN_UNIT_TEST=0        # Not in unit test mode
     ETL_USE_TYPE_TRAITS_BUILTINS=1  # Use compiler builtins for type traits
-    ETL_NO_LARGE_CHAR_SUPPORT=1     # No need for large char support
-    ETL_HAS_NATIVE_CHAR16_T=1       # C++11 has native char16_t
-    ETL_HAS_NATIVE_CHAR32_T=1       # C++11 has native char32_t
+    # Don't set ETL_NO_LARGE_CHAR_SUPPORT - C++11/17 has native char16_t/char32_t
 )
 
 # Set C++ standard

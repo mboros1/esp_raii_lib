@@ -14,29 +14,28 @@
 
 #pragma once
 
-#include "esp_timer.h"
-#include <utility>
 #include "etl/delegate.h"
+
+#include <utility>
+
+#include "esp_timer.h"
 
 namespace esp_raii {
 
 class Timer {
- public:
+   public:
     using callback_t = etl::delegate<void()>;
 
     Timer() : handle_(nullptr) {}
 
-    ~Timer() {
-        destroy();
-    }
+    ~Timer() { destroy(); }
 
     // Delete copy constructor and copy assignment
     Timer(const Timer&) = delete;
     Timer& operator=(const Timer&) = delete;
 
     // Enable move constructor and move assignment
-    Timer(Timer&& other) noexcept
-        : handle_(other.handle_), callback_(std::move(other.callback_)) {
+    Timer(Timer&& other) noexcept : handle_(other.handle_), callback_(std::move(other.callback_)) {
         other.handle_ = nullptr;
     }
 
@@ -57,13 +56,11 @@ class Timer {
 
         callback_ = callback;
 
-        esp_timer_create_args_t args = {
-            .callback = &Timer::timer_callback,
-            .arg = this,
-            .dispatch_method = ESP_TIMER_TASK,
-            .name = name,
-            .skip_unhandled_events = false
-        };
+        esp_timer_create_args_t args = {.callback = &Timer::timer_callback,
+                                        .arg = this,
+                                        .dispatch_method = ESP_TIMER_TASK,
+                                        .name = name,
+                                        .skip_unhandled_events = false};
 
         esp_err_t ret = esp_timer_create(&args, &handle_);
         if (ret == ESP_OK) {
@@ -99,11 +96,9 @@ class Timer {
         return start(period_us);
     }
 
-    bool is_active() const {
-        return handle_ && esp_timer_is_active(handle_);
-    }
+    bool is_active() const { return handle_ && esp_timer_is_active(handle_); }
 
- private:
+   private:
     void destroy() {
         if (handle_) {
             esp_timer_stop(handle_);

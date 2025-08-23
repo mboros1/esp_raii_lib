@@ -15,15 +15,14 @@
 #pragma once
 
 #include "driver/gpio.h"
+
 #include <utility>
 
 namespace esp_raii {
 
 class GPIO {
- public:
-    explicit GPIO(gpio_num_t pin)
-        : pin_(pin), configured_(false) {
-    }
+   public:
+    explicit GPIO(gpio_num_t pin) : pin_(pin), configured_(false) {}
 
     ~GPIO() {
         if (configured_) {
@@ -36,8 +35,7 @@ class GPIO {
     GPIO& operator=(const GPIO&) = delete;
 
     // Enable move constructor and move assignment
-    GPIO(GPIO&& other) noexcept
-        : pin_(other.pin_), configured_(other.configured_) {
+    GPIO(GPIO&& other) noexcept : pin_(other.pin_), configured_(other.configured_) {
         other.configured_ = false;
     }
 
@@ -72,17 +70,13 @@ class GPIO {
         return ret;
     }
 
-    esp_err_t set_level(uint32_t level) {
-        return gpio_set_level(pin_, level);
-    }
+    esp_err_t set_level(uint32_t level) { return gpio_set_level(pin_, level); }
 
-    int get_level() {
-        return gpio_get_level(pin_);
-    }
+    int get_level() { return gpio_get_level(pin_); }
 
     gpio_num_t pin() const { return pin_; }
 
- private:
+   private:
     gpio_num_t pin_;
     bool configured_;
 };

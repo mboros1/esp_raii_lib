@@ -1,0 +1,11 @@
+# Ignore vendored dependencies
+deps/
+
+# Ignore build directories
+build/
+test_app/build/
+examples/*/build/
+
+# Ignore other generated files
+*.pb.h
+*.pb.cc

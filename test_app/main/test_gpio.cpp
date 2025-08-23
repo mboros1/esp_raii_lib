@@ -12,7 +12,6 @@ static void test_gpio_constructor_destructor() {
     TEST_ASSERT_EQUAL(GPIO_NUM_4, gpio.pin());
   }
   // GPIO should be automatically reset after destruction
-  TEST_PASS_MESSAGE("GPIO constructor/destructor test passed");
 }
 
 static void test_gpio_output_configuration() {
@@ -89,7 +88,6 @@ static void test_gpio_raii_in_vector() {
     }
   }
   // All GPIOs should be automatically cleaned up
-  TEST_PASS_MESSAGE("GPIO RAII with ETL vector test passed");
 }
 
 // Unity test group runner

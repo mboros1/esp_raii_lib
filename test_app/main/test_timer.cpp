@@ -15,7 +15,6 @@ static void test_timer_constructor_destructor() {
     esp_raii::Timer timer;
     TEST_ASSERT_FALSE(timer.is_active());
   }
-  TEST_PASS_MESSAGE("Timer constructor/destructor test passed");
 }
 
 static void test_timer_create_and_start() {

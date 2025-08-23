@@ -2,13 +2,23 @@
 
 A modern C++ RAII (Resource Acquisition Is Initialization) wrapper library for ESP-IDF, featuring ETL (Embedded Template Library) containers for embedded systems.
 
+## Philosophy: Zero-Cost Abstractions
+
+This library is built on the principle of **zero-cost abstractions**:
+- **No heap allocations** - Everything is stack-based or compile-time allocated
+- **No exceptions** - Error handling through return codes (ESP-IDF style)
+- **No RTTI** - No runtime type information overhead
+- **No runtime checks** in release builds - All safety is compile-time
+- **Header-only** - Everything is inlined, no function call overhead
+- **`noexcept` move operations** - Guaranteed no-throw moves
+
 ## Features
 
 - **RAII Wrappers**: Automatic resource management for ESP-IDF components
-- **ETL Integration**: STL-like containers optimized for embedded systems (no dynamic allocation)
-- **Header-only**: Easy to integrate, no compilation required for the library itself
-- **Move Semantics**: Efficient resource transfer with C++11 move semantics
-- **Type Safety**: Strong typing prevents common errors
+- **ETL Integration**: STL-like containers with fixed capacity (no dynamic allocation)
+- **Compile-time Safety**: Template metaprogramming for zero runtime cost
+- **Move Semantics**: Efficient resource transfer with `noexcept` guarantees
+- **Type Safety**: Strong typing prevents errors at compile time
 
 ## Current RAII Wrappers
 

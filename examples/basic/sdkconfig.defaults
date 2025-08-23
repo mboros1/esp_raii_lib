@@ -1,0 +1,17 @@
+# Example application configuration - Zero cost
+CONFIG_IDF_TARGET="esp32"
+
+# DISABLE C++ exceptions - zero cost abstractions
+CONFIG_COMPILER_CXX_EXCEPTIONS=n
+
+# DISABLE C++ RTTI - not needed for RAII
+CONFIG_COMPILER_CXX_RTTI=n
+
+# Optimization - optimize for size
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+# Minimal logging in production
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y
+
+# Main task stack size
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=4096

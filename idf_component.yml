@@ -6,7 +6,7 @@ issues: "https://github.com/yourusername/esp_raii_lib/issues"
 
 dependencies:
   idf: ">=5.0"
-  
+
 targets:
   - esp32
   - esp32s2
@@ -16,7 +16,7 @@ targets:
   - esp32h2
 
 tags:
-  - "c++"
-  - "raii"
-  - "etl"
-  - "wrapper"
+  - cpp
+  - raii
+  - etl
+  - wrapper

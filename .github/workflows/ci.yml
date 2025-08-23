@@ -29,6 +29,11 @@ jobs:
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
 
+    - name: Remove idf_component.yml for older IDF versions
+      if: matrix.idf_version != 'latest'
+      run: |
+        rm -f idf_component.yml
+
     - name: Install QEMU
       run: |
         apt-get update

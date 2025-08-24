@@ -1,0 +1,5 @@
+# Minimal configuration for timer example
+CONFIG_ESPTOOLPY_FLASHSIZE_2MB=y
+
+# Enable timer debugging (optional)
+CONFIG_ESP_TIMER_PROFILING=n

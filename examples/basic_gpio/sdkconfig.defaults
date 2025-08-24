@@ -1,0 +1,2 @@
+# Minimal configuration for basic GPIO example
+CONFIG_ESPTOOLPY_FLASHSIZE_2MB=y

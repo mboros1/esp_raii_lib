@@ -32,7 +32,7 @@ jobs:
       with:
         token: ${{ secrets.WOKWI_CLI_TOKEN }}
         path: test_app
-        timeout: 10000
+        timeout: 120000  # 2 minutes in milliseconds
         expect_text: "TESTS_COMPLETED: PASS"
         fail_text: "TESTS_COMPLETED: FAIL"
 

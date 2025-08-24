@@ -1,5 +1,11 @@
-#include "unity.h"
+// Copyright 2024 Martin Boros
+// SPDX-License-Identifier: Apache-2.0
+
 #include <memory>
+
+extern "C" {
+#include "unity.h"
+}
 
 #include "esp_raii_lib/gpio.hpp"
 #include "esp_raii_lib/timer.hpp"
@@ -104,8 +110,8 @@ static void test_etl_circular_buffer() {
   // Add readings
   for (int i = 0; i < 7; i++) {
     SensorReading reading = {
-        .temperature = 20.0f + i, 
-        .humidity = 50.0f + i, 
+        .temperature = 20.0f + i,
+        .humidity = 50.0f + i,
         .timestamp = static_cast<uint32_t>(1000 + i)};
     readings.push(reading);
   }

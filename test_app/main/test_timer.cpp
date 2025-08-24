@@ -1,8 +1,14 @@
+// Copyright 2024 Martin Boros
+// SPDX-License-Identifier: Apache-2.0
+
+#include <atomic>
+#include <utility>
+
+extern "C" {
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "unity.h"
-
-#include <atomic>
+}
 
 #include "esp_raii_lib/timer.hpp"
 

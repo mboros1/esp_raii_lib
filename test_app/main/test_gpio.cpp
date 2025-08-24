@@ -1,6 +1,12 @@
-#include "unity.h"
+// Copyright 2024 Martin Boros
+// SPDX-License-Identifier: Apache-2.0
 
 #include <memory>
+#include <utility>
+
+extern "C" {
+#include "unity.h"
+}
 
 #include "esp_raii_lib/gpio.hpp"
 #include "etl/vector.h"

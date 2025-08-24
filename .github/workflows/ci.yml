@@ -74,5 +74,5 @@ jobs:
           --exclude=test_app/build \
           --exclude=examples/*/build \
           --exclude=deps \
-          --filter=-build/header_guard,-readability/casting \
-          include/*.hpp test_app/main/*.cpp examples/*/*.cpp
+          --filter=-build/header_guard,-readability/casting,-build/include_subdir \
+          include/ test_app/main/ examples/

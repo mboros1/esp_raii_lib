@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+elf = "build/esp_raii_lib_test.elf"
+firmware = "build/esp_raii_lib_test.bin"

@@ -1,11 +1,10 @@
-name: CI Tests
+name: CI
 
 on:
   push:
     branches: [ trunk ]
   pull_request:
     branches: [ trunk ]
-  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -15,194 +14,65 @@ jobs:
         idf_version: ["v5.1", "v5.2", "latest"]
         target: ["esp32", "esp32c3"]
     
-    container:
-      image: espressif/idf:${{ matrix.idf_version }}
-      options: --user root
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        submodules: recursive
 
-    - name: Set safe directory
-      run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
-
-    - name: Remove idf_component.yml for older IDF versions
-      if: matrix.idf_version != 'latest'
-      run: |
-        rm -f idf_component.yml
-
-    - name: Install QEMU
-      run: |
-        apt-get update
-        apt-get install -y qemu-system-xtensa qemu-system-misc
-
-    - name: Build test application
-      working-directory: test_app
-      run: |
-        . $IDF_PATH/export.sh
-        idf.py set-target ${{ matrix.target }}
-        idf.py build
-
-    - name: Run tests in QEMU
-      if: matrix.target == 'esp32'
-      working-directory: test_app
-      timeout-minutes: 5
-      run: |
-        . $IDF_PATH/export.sh
-        
-        # Create a script to run QEMU and capture output
-        cat > run_qemu.sh << 'EOF'
-        #!/bin/bash
-        timeout 60 qemu-system-xtensa \
-          -nographic \
-          -machine esp32 \
-          -drive file=build/flash_image.bin,if=mtd,format=raw \
-          2>&1 | tee qemu_output.log
-        EOF
-        
-        chmod +x run_qemu.sh
-        
-        # Merge binaries for QEMU
-        # Use esptool.py directly for better compatibility across IDF versions
-        esptool.py --chip ${{ matrix.target }} merge_bin \
-          --flash_mode dio --flash_freq 40m --flash_size 2MB \
-          -o build/flash_image.bin \
-          0x1000 build/bootloader/bootloader.bin \
-          0x10000 build/esp_raii_lib_test.bin \
-          0x8000 build/partition_table/partition-table.bin
-        
-        # Run QEMU and check output
-        ./run_qemu.sh || true
-        
-        # Check if tests completed
-        if grep -q "TESTS_COMPLETED: PASS" qemu_output.log; then
-          echo "✅ All tests passed!"
-          exit 0
-        elif grep -q "TESTS_COMPLETED: FAIL" qemu_output.log; then
-          echo "❌ Some tests failed!"
-          cat qemu_output.log
-          exit 1
-        else
-          echo "⚠️ Tests did not complete properly"
-          cat qemu_output.log
-          exit 1
-        fi
-
-    - name: Run tests in QEMU (RISC-V)
-      if: matrix.target == 'esp32c3'
-      working-directory: test_app
-      timeout-minutes: 5
-      run: |
-        . $IDF_PATH/export.sh
-        
-        # Create a script to run QEMU for RISC-V
-        cat > run_qemu_riscv.sh << 'EOF'
-        #!/bin/bash
-        timeout 60 qemu-system-riscv32 \
-          -nographic \
-          -machine esp32c3 \
-          -drive file=build/flash_image.bin,if=mtd,format=raw \
-          2>&1 | tee qemu_output.log
-        EOF
-        
-        chmod +x run_qemu_riscv.sh
-        
-        # Merge binaries for QEMU
-        # Use esptool.py directly for better compatibility across IDF versions
-        esptool.py --chip ${{ matrix.target }} merge_bin \
-          --flash_mode dio --flash_freq 40m --flash_size 2MB \
-          -o build/flash_image.bin \
-          0x1000 build/bootloader/bootloader.bin \
-          0x10000 build/esp_raii_lib_test.bin \
-          0x8000 build/partition_table/partition-table.bin
-        
-        # Run QEMU and check output
-        ./run_qemu_riscv.sh || true
-        
-        # Check if tests completed
-        if grep -q "TESTS_COMPLETED: PASS" qemu_output.log; then
-          echo "✅ All tests passed!"
-          exit 0
-        elif grep -q "TESTS_COMPLETED: FAIL" qemu_output.log; then
-          echo "❌ Some tests failed!"
-          cat qemu_output.log
-          exit 1
-        else
-          echo "⚠️ Tests did not complete properly"
-          cat qemu_output.log
-          exit 1
-        fi
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
+    - name: Build with ESP-IDF
+      uses: espressif/esp-idf-ci-action@v1
       with:
-        name: test-results-${{ matrix.idf_version }}-${{ matrix.target }}
-        path: |
-          test_app/build/*.bin
-          test_app/build/*.elf
-          test_app/build/*.map
-          test_app/qemu_output.log
+        esp_idf_version: ${{ matrix.idf_version }}
+        target: ${{ matrix.target }}
+        path: test_app
+
+    - name: Test with Wokwi
+      if: matrix.target == 'esp32'  # Wokwi works best with ESP32
+      uses: wokwi/wokwi-ci-action@v1
+      with:
+        token: ${{ secrets.WOKWI_CLI_TOKEN }}
+        path: test_app
+        timeout: 10000
+        expect_text: "TESTS_COMPLETED: PASS"
+        fail_text: "TESTS_COMPLETED: FAIL"
 
   build-examples:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        idf_version: ["latest"]
-        example: ["basic"]
-    
-    container:
-      image: espressif/idf:${{ matrix.idf_version }}
-      options: --user root
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set safe directory
-      run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
-
-    - name: Build example
-      working-directory: examples/${{ matrix.example }}
-      run: |
-        . $IDF_PATH/export.sh
-        idf.py set-target esp32
-        idf.py build
-
-    - name: Check build size
-      working-directory: examples/${{ matrix.example }}
-      run: |
-        . $IDF_PATH/export.sh
-        idf.py size
-        idf.py size-components
-
-  code-quality:
-    runs-on: ubuntu-latest
+        example: ["basic_gpio", "timer_example"]
+        target: ["esp32", "esp32c3", "esp32s3"]
     
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
+    - name: Build example
+      uses: espressif/esp-idf-ci-action@v1
       with:
-        python-version: '3.10'
+        esp_idf_version: latest
+        target: ${{ matrix.target }}
+        path: examples/${{ matrix.example }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install cpplint
-
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+    
+    - name: Install cpplint
+      run: pip install cpplint
+    
     - name: Run cpplint
       run: |
-        cpplint --recursive --exclude=deps \
-          --filter=-whitespace/line_length,-build/header_guard,-runtime/references \
-          include/
+        cpplint --recursive \
+          --exclude=test_app/build \
+          --exclude=examples/*/build \
+          --exclude=deps \
+          --filter=-build/header_guard,-readability/casting \
+          include/*.hpp test_app/main/*.cpp examples/*/*.cpp

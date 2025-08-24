@@ -8,8 +8,9 @@ extern "C" {
 #include "unity.h"
 }
 
-#include "esp_raii_lib/gpio.hpp"
 #include "etl/vector.h"
+
+#include "esp_raii_lib/gpio.hpp"
 
 // Test fixture
 static void test_gpio_constructor_destructor() {
@@ -77,7 +78,7 @@ static void test_gpio_multiple_pins() {
 }
 
 static void test_gpio_raii_in_vector() {
-// Test RAII behavior with ETL container
+  // Test RAII behavior with ETL container
 
   {
     etl::vector<esp_raii::GPIO, 3> gpio_pins;

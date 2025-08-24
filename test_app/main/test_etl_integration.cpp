@@ -7,15 +7,16 @@ extern "C" {
 #include "unity.h"
 }
 
-#include "esp_raii_lib/gpio.hpp"
-#include "esp_raii_lib/timer.hpp"
 #include "etl/array.h"
+#include "etl/bitset.h"
+#include "etl/circular_buffer.h"
 #include "etl/map.h"
 #include "etl/optional.h"
 #include "etl/string.h"
 #include "etl/vector.h"
-#include "etl/circular_buffer.h"
-#include "etl/bitset.h"
+
+#include "esp_raii_lib/gpio.hpp"
+#include "esp_raii_lib/timer.hpp"
 
 static void test_etl_vector_basic() {
   etl::vector<int, 10> vec;
@@ -109,10 +110,9 @@ static void test_etl_circular_buffer() {
 
   // Add readings
   for (int i = 0; i < 7; i++) {
-    SensorReading reading = {
-        .temperature = 20.0f + i,
-        .humidity = 50.0f + i,
-        .timestamp = static_cast<uint32_t>(1000 + i)};
+    SensorReading reading = {.temperature = 20.0f + i,
+                             .humidity = 50.0f + i,
+                             .timestamp = static_cast<uint32_t>(1000 + i)};
     readings.push(reading);
   }
 

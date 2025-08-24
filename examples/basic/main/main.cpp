@@ -1,10 +1,16 @@
+// Copyright 2024 Martin Boros
+// SPDX-License-Identifier: Apache-2.0
+
+extern "C" {
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+}
 
-#include "esp_raii_lib/esp_raii_lib.hpp"
 #include "etl/string.h"
 #include "etl/vector.h"
+
+#include "esp_raii_lib/esp_raii_lib.hpp"
 
 static const char* TAG = "RAII_EXAMPLE";
 

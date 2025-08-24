@@ -1,4 +1,5 @@
 [wokwi]
 version = 1
+# For ESP-IDF projects, use flasher_args.json which includes bootloader and partition table
+firmware = "build/flasher_args.json"
 elf = "build/esp_raii_lib_test.elf"
-firmware = "build/esp_raii_lib_test.bin"

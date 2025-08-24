@@ -1,0 +1,63 @@
+name: Build CI
+
+on:
+  push:
+    branches: [ trunk, main ]
+  pull_request:
+    branches: [ trunk, main ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        idf_version: ["v5.1", "v5.2", "latest"]
+        target: ["esp32", "esp32c3"]
+    
+    name: Build ${{ matrix.target }} - IDF ${{ matrix.idf_version }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Remove idf_component.yml for older IDF versions
+      if: matrix.idf_version == 'v5.1' || matrix.idf_version == 'v5.2'
+      run: rm -f idf_component.yml
+
+    - name: Build test application
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        esp_idf_version: ${{ matrix.idf_version }}
+        target: ${{ matrix.target }}
+        path: test_app
+        command: idf.py build
+
+    - name: Build examples
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        esp_idf_version: ${{ matrix.idf_version }}
+        target: ${{ matrix.target }}
+        command: |
+          cd examples/basic_gpio && idf.py build
+          cd ../timer_example && idf.py build
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+    
+    - name: Install cpplint
+      run: pip install cpplint
+    
+    - name: Run cpplint
+      run: |
+        find . -path "./build" -prune -o -path "./*/build" -prune -o -path "./deps" -prune -o \
+          \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print | \
+          xargs cpplint --filter=-build/header_guard,-readability/casting,-build/include_subdir
